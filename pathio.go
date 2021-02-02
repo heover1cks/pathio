@@ -44,11 +44,11 @@ type Pathio interface {
 // To configure options on the client, create a new Client and call its methods
 // directly.
 // 	&Client{
-// 		disableS3Encryption: true, // disables encryption
+// 		DisableS3Encryption: true, // disables encryption
 // 		Region: "us-east-1", // hardcodes the s3 region, instead of looking it up
 // 	}.Write(...)
 type Client struct {
-	disableS3Encryption bool
+	DisableS3Encryption bool
 	Region              string
 	providedConfig      *aws.Config
 }
@@ -144,7 +144,7 @@ func (c *Client) WriteReader(path string, input io.ReadSeeker) error {
 		if err != nil {
 			return err
 		}
-		return writeToS3(s3Conn, input, c.disableS3Encryption)
+		return writeToS3(s3Conn, input, c.DisableS3Encryption)
 	}
 	return writeToLocalFile(path, input)
 }
