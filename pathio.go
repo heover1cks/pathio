@@ -44,11 +44,11 @@ type Pathio interface {
 // To configure options on the client, create a new Client and call its methods
 // directly.
 // 	&Client{
-// 		DisableS3Encryption: true, // disables encryption
+// 		disableS3Encryption: true, // disables encryption
 // 		Region: "us-east-1", // hardcodes the s3 region, instead of looking it up
 // 	}.Write(...)
 type Client struct {
-	DisableS3Encryption bool
+	disableS3Encryption bool
 	Region              string
 	providedConfig      *aws.Config
 }
@@ -59,9 +59,10 @@ var DefaultClient Pathio = &Client{}
 
 // NewClient creates a new client that utilizes the provided AWS config. This can
 // be leveraged to enforce more limited permissions.
-func NewClient(cfg *aws.Config) *Client {
+func NewClient(cfg *aws.Config, isEnabled bool) *Client {
 	return &Client{
 		providedConfig: cfg,
+    disableS3Encryption: isEnabled,
 	}
 }
 
@@ -144,7 +145,7 @@ func (c *Client) WriteReader(path string, input io.ReadSeeker) error {
 		if err != nil {
 			return err
 		}
-		return writeToS3(s3Conn, input, c.DisableS3Encryption)
+		return writeToS3(s3Conn, input, c.disableS3Encryption)
 	}
 	return writeToLocalFile(path, input)
 }
